@@ -41,8 +41,14 @@ Alternatively, you can use Flask's built-in abort method like `abort(500)` to th
 
 ### Setup
 
+Local:
 ```
 pip install pipenv
 pipenv install && pipenv shell
 pipenv run python main.py
+```
+
+Docker:
+```
+docker run -d -p 5000:5000 jonfairbanks/bad-app
 ```
