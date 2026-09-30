@@ -71,4 +71,3 @@ Create the immutable image reference when a digest is configured.
 {{- printf "%s:%s" .Values.image.repository (.Values.image.tag | default .Chart.AppVersion) -}}
 {{- end -}}
 {{- end }}
-
