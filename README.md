@@ -77,7 +77,9 @@ Dependabot checks Python dependencies, Docker base images, and Actions every
 Monday at 9:00 AM Pacific. Its grouped patch/minor PRs target `develop` and use
 policy-gated squash auto-merge. Major updates need manual review. The privileged
 metadata workflow never checks out or executes PR code and never approves PRs.
-Repository auto-merge and branch rules must be enabled before this is active.
+Repository auto-merge is enabled, and both branches require the six CI checks
+through an active ruleset without bypass actors. The workflows become active
+on the default branch after the develop-to-main promotion.
 
 Weekly promotion opens a direct `develop` to `main` PR and enables merge-commit
 auto-merge after successful checks. It refuses to run without effective main
