@@ -8,7 +8,9 @@ import urllib.request
 
 
 def docker(*args):
-    return subprocess.check_output(["docker", *args], text=True, stderr=subprocess.STDOUT).strip()
+    result = subprocess.run(["docker", *args], text=True, capture_output=True, check=True)
+    output = result.stdout + result.stderr if args[0] == "logs" else result.stdout
+    return output.strip()
 
 
 image = sys.argv[1]
