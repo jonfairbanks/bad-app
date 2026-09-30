@@ -1,0 +1,55 @@
+name: Weekly Develop to Main
+
+on:
+  schedule:
+    - cron: "17 12 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: weekly-develop-to-main
+  cancel-in-progress: false
+
+jobs:
+  promote:
+    name: Promote Develop
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Detect Unreleased Changes
+        id: changes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          files=$(gh api "repos/$GH_REPO/compare/main...develop" --jq '.files | length')
+          echo "has_changes=$([ "$files" -gt 0 ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+      - name: Open Release PR and Enable Auto-Merge
+        if: steps.changes.outputs.has_changes == 'true'
+        env:
+          # A separate token lets PR creation and merging trigger CI/release events.
+          # Store a fine-grained token with Contents and Pull Requests write access.
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          test -n "$GH_TOKEN" || { echo 'Configure RELEASE_TOKEN before promotion.' >&2; exit 1; }
+          rules=$(gh api "repos/$GH_REPO/rules/branches/main")
+          jq -e 'any(.[]; .type == "pull_request") and any(.[]; .type == "required_status_checks" and (.parameters.required_status_checks | length > 0))' <<< "$rules"
+          pr_url=$(gh pr list --base main --head develop --state open --json url --jq '.[0].url')
+          if [ -z "$pr_url" ]; then
+            pr_url=$(gh pr create --base main --head develop --title 'Release Develop to Main' \
+              --body 'Promote tested develop changes. Required checks and branch rules gate merging.')
+          fi
+          head_sha=$(gh pr view "$pr_url" --json headRefOid --jq '.headRefOid')
+          for attempt in {1..30}; do
+            count=$(gh pr checks "$pr_url" --required --json name --jq 'length' 2>/dev/null || echo 0)
+            if [ "$count" -gt 0 ]; then break; fi
+            sleep 10
+          done
+          [ "$count" -gt 0 ] || { echo 'Required PR checks did not start.' >&2; exit 1; }
+          gh pr checks "$pr_url" --required --watch --interval 10
+          gh pr merge "$pr_url" --auto --merge --match-head-commit "$head_sha"

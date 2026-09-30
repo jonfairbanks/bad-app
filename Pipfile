@@ -5,5 +5,15 @@ name = "pypi"
 
 [packages]
 flask = "*"
+gunicorn = "*"
 
 [dev-packages]
+pip-audit = "*"
+
+[requires]
+python_version = "3.14"
+
+[scripts]
+test = "python -m unittest discover -s tests -v"
+audit = "pip-audit"
+serve = "gunicorn --config gunicorn.conf.py main:app"
