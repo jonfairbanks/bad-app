@@ -33,10 +33,10 @@ jobs:
         env:
           # A separate token lets PR creation and merging trigger CI/release events.
           # Store a fine-grained token with Contents and Pull Requests write access.
-          GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+          GH_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
           GH_REPO: ${{ github.repository }}
         run: |
-          test -n "$GH_TOKEN" || { echo 'Configure RELEASE_TOKEN before promotion.' >&2; exit 1; }
+          test -n "$GH_TOKEN" || { echo 'Configure PERSONAL_TOKEN before promotion.' >&2; exit 1; }
           rules=$(gh api "repos/$GH_REPO/rules/branches/main")
           jq -e 'any(.[]; .type == "pull_request") and any(.[]; .type == "required_status_checks" and (.parameters.required_status_checks | length > 0))' <<< "$rules"
           pr_url=$(gh pr list --base main --head develop --state open --json url --jq '.[0].url')
