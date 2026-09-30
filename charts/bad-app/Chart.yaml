@@ -1,0 +1,10 @@
+apiVersion: v2
+name: bad-app
+description: Flask HTTP status-code demonstration app
+type: application
+version: 1.0.0
+appVersion: "latest"
+kubeVersion: ">=1.25.0-0"
+home: https://github.com/jonfairbanks/bad-app
+sources:
+  - https://github.com/jonfairbanks/bad-app
