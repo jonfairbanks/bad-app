@@ -5,8 +5,13 @@ from flask import Flask, jsonify
 app = Flask(__name__)
 
 # Set up logging
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+@app.route("/healthz")
+def health():
+    return jsonify({"status": "ok"})
+
 
 @app.route("/")
 def hello():
