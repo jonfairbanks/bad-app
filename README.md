@@ -83,7 +83,7 @@ on the default branch after the develop-to-main promotion.
 
 Weekly promotion opens a direct `develop` to `main` PR and enables merge-commit
 auto-merge after successful checks. It refuses to run without effective main
-branch rules. Configure `RELEASE_TOKEN` as a fine-grained repository token with
+branch rules. Configure `PERSONAL_TOKEN` as a fine-grained repository token with
 Contents and Pull Requests write access. A separate token is needed because PRs
 and merges created with `GITHUB_TOKEN` do not trigger downstream workflows.
 The token is used only for GitHub API commands, without checking out PR code.
