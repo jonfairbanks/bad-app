@@ -1,4 +1,4 @@
-FROM python:3.14-slim-trixie@sha256:51dafde81dbdb6ebde285137a295cf18a47ca95234fe388a343719cb97305b3d AS base
+FROM python:3.14-slim-trixie@sha256:a2b82f3c48559aa0a8446d9af49826b6e2b2016f4cd2afabfe6013ec53729170 AS base
 RUN apt-get update \
     && apt-get upgrade --yes \
     && rm -rf /var/lib/apt/lists/*
